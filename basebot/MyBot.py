@@ -28,13 +28,13 @@ def get_winning_stance(stance):
 
 def priority(monster):
     pos = a * monster.death_effects.health + b * monster.death_effects.speed + c * monster.death_effects.rock + d * monster.death_effects.paper + e * monster.death_effects.scissors
-    #neg = f * moves_to_get_there(monster) + g * moves_to_beat_monster(monster) + h * get_health_damage(monster)
-    return pos #- neg # formula
+    neg = f * moves_to_get_there(monster) + g * moves_to_beat_monster(monster) + h * get_health_damage(monster)
+    return pos - neg # formula
 
 def moves_to_get_there(monster):
     path = game.shortest_paths(me.location, monster.location)
-    moves = (7 - me.speed) * len(path)[0]
-    if monster.dead == false:
+    moves = (7 - me.speed) * len(path[0])
+    if monster.dead == False:
         return moves
     return monster.respawn_counter if monster.respawn_counter > moves else moves
 
@@ -89,32 +89,33 @@ for line in fileinput.input():
 
 # code in this block will be executed each turn of the game
 
-me = game.get_self()
+    me = game.get_self()
 
-if me.location == me.destination: # check if we have moved this turn
+    if me.location == me.destination: # check if we have moved this turn
     # create list of the priority level for each monster
-    allmonsters = game.get_all_monsters()
-    list = map(priority, allmonsters)
+        allmonsters = game.get_all_monsters()
+        list = map(priority, allmonsters)
 
     # choose monster with max priority
-    maxpriority = max(list)
-    target = allmonsters[list.index(maxpriority)]
+        maxpriority = max(list)
+        target = allmonsters[list.index(maxpriority)]
 
     # get the set of shortest paths to that monster
-    paths = game.shortest_paths(me.location, target.location)
-    destination_node = paths[random.randint(0, len(paths)-1)][0]
-else:
-    destination_node = me.destination
+        paths = game.shortest_paths(me.location, target.location)
+        destination_node = paths[random.randint(0, len(paths)-1)][0]
+    # choose monster with max priority
+    else:
+        destination_node = me.destination
 
-if game.has_monster(me.location):
+    if game.has_monster(me.location):
     # if there's a monster at my location, choose the stance that damages that monster
-    chosen_stance = get_winning_stance(game.get_monster(me.location).stance)
-else:
+        chosen_stance = get_winning_stance(game.get_monster(me.location).stance)
+    else:
     # otherwise, pick a random stance
-    chosen_stance = stances[random.randint(0, 2)]
+        chosen_stance = stances[random.randint(0, 2)]
 
 
 # submit your decision for the turn (This function should be called exactly once per turn)
-game.submit_decision(destination_node, chosen_stance)
+    game.submit_decision(destination_node, chosen_stance)
 
     
